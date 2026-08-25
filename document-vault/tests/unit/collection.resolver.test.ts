@@ -1,4 +1,5 @@
 import { describe, expect, it, mock } from "bun:test";
+import { GraphQLError } from "graphql";
 import type { PrismaClient } from "@prisma/client";
 import { collectionMutations, collectionQueries } from "../../src/resolvers/collection.js";
 import type { GraphQLContext } from "../../src/context.js";
@@ -20,22 +21,57 @@ describe("collectionQueries.collections", () => {
 });
 
 describe("collectionMutations.createCollection", () => {
-  it("rejects an empty name", async () => {
-    const ctx = makeContext({ collection: { create: mock(async () => ({})) } });
+ it("rejects an empty name", async () => {
+  expect.assertions(2);
 
-    expect(
-      collectionMutations.createCollection({}, { name: "   ", slug: "notes" }, ctx)
-    ).rejects.toThrow(/must not be empty/);
+  const ctx = makeContext({
+    collection: {
+      create: mock(async () => ({})),
+    },
   });
 
-  it("rejects a malformed slug", async () => {
-    const ctx = makeContext({ collection: { create: mock(async () => ({})) } });
+  try {
+    await collectionMutations.createCollection(
+      {},
+      { name: "", slug: "notes" },
+      ctx
+    );
 
-    expect(
-      collectionMutations.createCollection({}, { name: "Notes", slug: "Not A Slug!" }, ctx)
-    ).rejects.toThrow(/invalid/);
+    throw new Error("expected rejection");
+  } catch (err) {
+    expect(err).toBeInstanceOf(GraphQLError);
+    expect((err as GraphQLError).extensions?.code).toBe(
+      "BAD_USER_INPUT"
+    );
+  }
+});
+
+
+it("rejects a malformed slug", async () => {
+  expect.assertions(2);
+
+  const ctx = makeContext({
+    collection: {
+      create: mock(async () => ({})),
+    },
   });
 
+  try {
+    await collectionMutations.createCollection(
+      {},
+      { name: "Notes", slug: "Not A Slug!" },
+      ctx
+    );
+
+    throw new Error("expected rejection");
+  } catch (err) {
+    expect(err).toBeInstanceOf(GraphQLError);
+    expect((err as GraphQLError).extensions?.code).toBe(
+      "BAD_USER_INPUT"
+    );
+  }
+});
+ 
   it("creates a collection with a trimmed name and valid slug", async () => {
     const create = mock(async (args: unknown) => ({ id: "c1", ...((args as { data: object }).data) }));
     const ctx = makeContext({ collection: { create } });
