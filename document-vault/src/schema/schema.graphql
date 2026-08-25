@@ -1,0 +1,69 @@
+scalar DateTime
+
+type Collection {
+  id: ID!
+  name: String!
+  slug: String!
+  createdAt: DateTime!
+  documents: [Document!]!
+}
+
+type Document {
+  id: ID!
+  title: String!
+  content: String!
+  tags: [String!]!
+  isArchived: Boolean!
+  createdAt: DateTime!
+  collectionId: ID!
+  collection: Collection!
+}
+
+"""
+Cursor-paginated page of documents. `nextCursor` is the id to pass as
+`cursor` on the next request, and is null when there are no more results.
+"""
+type DocumentPage {
+  items: [Document!]!
+  nextCursor: ID
+}
+
+type Query {
+  collections: [Collection!]!
+  collection(id: ID!): Collection
+
+  """
+  List documents. `search` does a case-insensitive substring match against
+  title OR content. `take` defaults to 20 and is capped at 100.
+  """
+  documents(
+    collectionId: ID
+    search: String
+    isArchived: Boolean
+    take: Int
+    cursor: ID
+  ): DocumentPage!
+}
+
+type Mutation {
+  createCollection(name: String!, slug: String!): Collection!
+
+  createDocument(
+    title: String!
+    content: String!
+    collectionId: ID!
+    tags: [String!]
+  ): Document!
+
+  updateDocument(
+    id: ID!
+    title: String
+    content: String
+    tags: [String!]
+    isArchived: Boolean
+  ): Document!
+
+  deleteDocument(id: ID!): Boolean!
+
+  moveDocument(id: ID!, collectionId: ID!): Document!
+}
