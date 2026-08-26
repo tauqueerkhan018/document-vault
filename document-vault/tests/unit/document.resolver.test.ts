@@ -9,12 +9,16 @@ function makeContext(overrides: Record<string, unknown>): GraphQLContext {
 
 describe("documentQueries.documents", () => {
   it("builds a case-insensitive OR search on title/content", async () => {
-    const findMany = mock(async () => []);
+    const findMany = mock(async (..._args:unknown[]) => []);
     const ctx = makeContext({ document: { findMany } });
 
     await documentQueries.documents({}, { search: "invoice" }, ctx);
 
-    const calledWith = findMany.mock.calls[0]?.[0] as { where: { OR: unknown } };
+    const calledWith = findMany.mock.calls[0]?.[0] as unknown as {
+      where: {
+        OR: unknown[];
+      };
+    };
     expect(calledWith.where.OR).toEqual([
       { title: { contains: "invoice", mode: "insensitive" } },
       { content: { contains: "invoice", mode: "insensitive" } },

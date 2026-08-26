@@ -5,7 +5,7 @@
  * Requires: `docker compose up -d` and `bun run gendb` to have been run
  * first, with DATABASE_URL pointing at that database (see .env.example).
  */
-import { afterAll, beforeAll, describe, expect, it } from "bun:test";
+import { afterAll, describe, expect, it } from "bun:test";
 import { prisma } from "../../src/lib/prisma.js";
 import { collectionMutations } from "../../src/resolvers/collection.js";
 import { documentMutations, documentQueries } from "../../src/resolvers/document.js";
