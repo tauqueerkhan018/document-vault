@@ -91,3 +91,13 @@ Run everything with `bun run test`, or split with `bun run test:unit` /
 - **Auth/ownership** — scope collections and documents to a `userId`, add an auth directive on mutations. Deliberately out of scope here, but the resolver layer is already structured so this would sit in `context.ts` (attach the authenticated user) and a thin authorization check per resolver.
 - **Full-text search** — swap the `contains` substring match for Postgres `tsvector`/`tsquery` (or a `GIN` trigram index) once search relevance or performance on large content bodies matters.
 - **DataLoader** — `Document.collection` and `Collection.documents` currently do a query per parent; batching with DataLoader would fix N+1s once nested queries get deep or high-traffic.
+
+## Tests
+
+The project includes unit and integration tests covering:
+
+- Collection creation and validation
+- Document creation and validation
+- Document search and pagination
+- Moving documents between collections
+- GraphQL error handling
