@@ -32,7 +32,7 @@ credentials — the defaults in `.env.example` match `docker-compose.yml`.
 | `bun run gendb` | Generate Prisma client + run dev migrations |
 | `bun run lint` | ESLint |
 | `bun run typecheck` | `tsc --noEmit` |
-| `bun run test` | Unit + integration tests |
+| `bun run te=st` | Unit + integration tests |
 | `bun run sanity` | lint + typecheck + test in one command |
 
 ## Domain
